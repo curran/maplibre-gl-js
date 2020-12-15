@@ -29,7 +29,12 @@ jobs:
           architecture: ${{ matrix.architecture }}
       - run: yarn install --frozen-lockfile
       # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
-      - if: ${{ runner.os == 'Linux' }}
-        run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
-      - if: ${{ runner.os != 'Linux' }}
-        run: yarn test-unit
+      - if: matrix.os == 'ubuntu-latest'
+        run: |
+          xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
+      - if: matrix.os == 'macos-latest'
+        run: |
+          yarn test
+      - if: runner.os != 'windows-latest'
+        run: |
+          yarn lint lint-css lint-docs test-unit
