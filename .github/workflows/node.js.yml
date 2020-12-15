@@ -27,6 +27,5 @@ jobs:
       with:
         node-version: ${{ matrix.node_version }}
         architecture: ${{ matrix.architecture }}
-    - run: sudo apt-get install mesa-utils xvfb libgl1-mesa-dri libglapi-mesa libosmesa6
     - run: yarn install --frozen-lockfile
     - run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
