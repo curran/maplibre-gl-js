@@ -48,5 +48,5 @@ jobs:
     - if: ${{ runner.os != 'ubuntu-latest' }}
       run: chmod +x build/run-tap
     - if: ${{ runner.os != 'ubuntu-latest' }}
-      run: .\build\run-tap --reporter classic --no-coverage test/unit
+      run: build\run-tap --reporter classic --no-coverage test/unit
 
