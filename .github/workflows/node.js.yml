@@ -32,3 +32,4 @@ jobs:
       run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
     - if: ${{ matrix.os != 'ubuntu-latest' }}
       run: yarn test
+
