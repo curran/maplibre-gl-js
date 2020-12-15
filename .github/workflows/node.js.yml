@@ -33,10 +33,10 @@ jobs:
         node-version: ${{ matrix.node_version }}
         architecture: ${{ matrix.architecture }}
     - run: yarn install --frozen-lockfile
-    - if: ${{ runner.os == 'windows-latest' }}
+    - if: ${{ runner.os == 'Windows' }}
       run: npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"
     # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
-    - if: ${{ runner.os == 'ubuntu-latest' }}
+    - if: ${{ runner.os == 'Linux' }}
       run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
-    - if: ${{ runner.os != 'ubuntu-latest' }}
+    - if: ${{ runner.os != 'Linux' }}
       run: yarn test
