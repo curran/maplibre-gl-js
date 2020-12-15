@@ -1,0 +1,3 @@
+# Set default line endings to LF. For more details, see:
+# https://docs.github.com/en/free-pro-team@latest/github/using-git/configuring-git-to-handle-line-endings#per-repository-settings
+* text eol=LF
