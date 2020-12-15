@@ -28,6 +28,5 @@ jobs:
         node-version: ${{ matrix.node_version }}
         architecture: ${{ matrix.architecture }}
     - run: sudo apt-get install mesa-utils xvfb libgl1-mesa-dri libglapi-mesa libosmesa6
-    - run: export DISPLAY=:99.0; sh -e /etc/init.d/xvfb start
     - run: yarn install --frozen-lockfile
-    - run: yarn test-unit
+    - run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test-unit
