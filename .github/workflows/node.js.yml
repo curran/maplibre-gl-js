@@ -36,6 +36,8 @@ jobs:
         node-version: ${{ matrix.node_version }}
         architecture: ${{ matrix.architecture }}
     - run: yarn install --frozen-lockfile
+    - if: ${{ runner.os == 'windows-latest' }}
+      run: npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"
     - if: ${{ runner.os == 'ubuntu-latest' }}
       run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
     - if: ${{ runner.os != 'ubuntu-latest' }}
