@@ -6,6 +6,7 @@
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
 *.js text eol=lf
+*.json text eol=lf
 
 # Denote all files that are truly binary and should not be modified.
 *.png binary
