@@ -6,7 +6,6 @@ on: [push, pull_request]
 
 jobs:
   build:
-
     strategy:
       fail-fast: false
       matrix:
@@ -22,15 +21,15 @@ jobs:
     name: Node ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2-beta
-      with:
-        node-version: ${{ matrix.node_version }}
-        architecture: ${{ matrix.architecture }}
-    - run: yarn install --frozen-lockfile
-    # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
-    - if: ${{ runner.os == 'Linux' }}
-      run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
-    - if: ${{ runner.os != 'Linux' }}
-      run: yarn test
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node_version }}
+          architecture: ${{ matrix.architecture }}
+      - run: yarn install --frozen-lockfile
+      # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
+      - if: ${{ runner.os == 'Linux' }}
+        run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test
+      - if: ${{ runner.os != 'Linux' }}
+        run: yarn test-unit
