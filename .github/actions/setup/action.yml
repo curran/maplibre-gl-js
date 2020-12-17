@@ -1,6 +1,6 @@
 name: "Setup"
 description: "Set up a workspace"
-inputs:
+runs:
   - name: Use Node.js 10 x64
     uses: actions/setup-node@v2-beta
     with:
