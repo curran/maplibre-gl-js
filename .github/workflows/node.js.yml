@@ -24,7 +24,7 @@ jobs:
         architecture:
           - x64
 
-    name: ${{ matrix.os }} / prepare / node ${{ matrix.node_version }} $${{ architecture }}
+    name: ${{ matrix.os }} / prepare / node ${{ matrix.node_version }} $${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -52,7 +52,7 @@ jobs:
         architecture:
           - x64
 
-    name: ${{ matrix.os }} / build / node ${{ matrix.node_version }} $${{ architecture }}
+    name: ${{ matrix.os }} / build / node ${{ matrix.node_version }} $${{ matrix.architecture }}
     runs-on: ${{ matrix.os }}
     needs: [prepare]
     steps:
