@@ -12,14 +12,16 @@ on:
 defaults: &defaults
   runs-on: ubuntu-latest
 
-setup: &setup
-  - uses: actions/checkout@v2
-  - name: Use Node.js ${{ matrix.node-version }}
-    uses: actions/setup-node@v2-beta
-    with:
-      node-version: 10
-      architecture: x64
-  - run: yarn install --frozen-lockfile
+checkout: &checkout
+  uses: actions/checkout@v2
+node: &node
+  name: Use Node.js ${{ matrix.node-version }}
+  uses: actions/setup-node@v2-beta
+  with:
+    node-version: 10
+    architecture: x64
+yarn: &yarn
+  run: yarn install --frozen-lockfile
 
 jobs:
   lint_build_test:
@@ -57,7 +59,9 @@ jobs:
   lint:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run lint
       - run: yarn run lint-docs
       - run: yarn run lint-css
@@ -65,7 +69,9 @@ jobs:
   build:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run build-prod-min
       - run: yarn run build-prod
       - run: yarn run build-csp
@@ -84,8 +90,11 @@ jobs:
 
   check-size:
     <<: *defaults
+    needs: [build]
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - uses: actions/download-artifact@v2
         with:
           name: dist
@@ -97,8 +106,11 @@ jobs:
 
   collect-stats:
     <<: *defaults
+    needs: [build]
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - name: Collect performance stats
         run: node bench/gl-stats.js
       - uses: actions/upload-artifact@v2
@@ -109,19 +121,25 @@ jobs:
   test-flow:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run test-flow
 
   test-unit:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run test-unit
 
   test-render:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run test-render
       - uses: actions/upload-artifact@v2
         with:
@@ -130,7 +148,9 @@ jobs:
   test-query:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run test-query
       - uses: actions/upload-artifact@v2
         with:
@@ -142,14 +162,17 @@ jobs:
   test-expressions:
     <<: *defaults
     steps:
-      <<: *setup
+      - *checkout
+      - *node
+      - *yarn
       - run: yarn run test-expressions
 
   # TODO: need a new data provider for this to run
   # test-browser:
   #   <<: *defaults
   #   steps:
-  #     <<: *setup
+  #     - *checkout
+  - *node
   #     - run: yarn run build-dev
   #     - run: yarn run build-token
   #     - name: Test Chrome
