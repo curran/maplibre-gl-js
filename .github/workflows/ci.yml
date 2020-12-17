@@ -93,6 +93,7 @@ jobs:
         with:
           name: dist
           path: ./dist
+      - run: find dist
       - name: Check bundle size
         run: |
           node build/check-bundle-size.js "dist/mapbox-gl.js" "JS"
@@ -113,6 +114,7 @@ jobs:
         with:
           name: dist
           path: ./dist
+      - run: find dist
       - name: Collect performance stats
         run: node bench/gl-stats.js
       - uses: actions/upload-artifact@v2
