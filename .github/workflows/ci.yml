@@ -9,17 +9,6 @@ on:
   # pull_request:
   #   branches: [main]
 
-defaults: &defaults
-  runs-on: ubuntu-latest
-
-  - uses: actions/checkout@v2
-  - name: Use Node.js ${{ matrix.node-version }}
-    uses: actions/setup-node@v2-beta
-    with:
-      node-version: 10
-      architecture: x64
-  - run: yarn install --frozen-lockfile
-
 jobs:
   lint_build_test:
     strategy:
