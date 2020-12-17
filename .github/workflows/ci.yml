@@ -41,7 +41,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run lint
       - run: yarn run lint-docs
       - run: yarn run lint-css
@@ -50,7 +55,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run build-prod-min
       - run: yarn run build-prod
       - run: yarn run build-csp
@@ -72,7 +82,12 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - uses: actions/download-artifact@v2
         with:
           name: dist
@@ -87,7 +102,12 @@ jobs:
     needs: [build]
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - uses: actions/download-artifact@v2
         with:
           name: dist
@@ -103,14 +123,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-flow
 
   test-unit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
       - run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn run test-unit
 
@@ -118,7 +148,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-query
       - uses: actions/upload-artifact@v2
         with:
@@ -132,14 +167,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/setup
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-expressions
 
-  # TODO: need a new data provider for these to run
-  # test-render:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: ./.github/actions/setup
+      # TODO: need a new data provider for these to run
+      # test-render:
+      #   runs-on: ubuntu-latest
+      #   steps:
+      - name: Use Node.js 10 x64
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
   #     - run: yarn run test-render
   #     - uses: actions/upload-artifact@v2
   #       with:
