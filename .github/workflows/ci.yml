@@ -1,0 +1,164 @@
+# This workflow will install node dependencies, build the source code and run the test target
+
+name: Node.js CI
+
+on:
+  - push
+  # push:
+  #   branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+defaults: &defaults
+  runs-on: ubuntu-latest
+
+setup: &setup
+  - uses: actions/checkout@v2
+  - name: Use Node.js ${{ matrix.node-version }}
+    uses: actions/setup-node@v2-beta
+    with:
+      node-version: 10
+      architecture: x64
+  - run: yarn install --frozen-lockfile
+
+jobs:
+  lint_build_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - windows-latest
+        node_version:
+          - 10
+        architecture:
+          - x64
+
+    name: ${{ matrix.os }} node ${{ matrix.node_version }} ${{ matrix.architecture }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node_version }}
+          architecture: ${{ matrix.architecture }}
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn run lint
+      - run: yarn run build-dev
+
+      # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
+      - if: ${{ runner.os == 'Linux' }}
+        run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test-unit
+      - if: ${{ runner.os != 'Linux' }}
+        run: yarn test-unit
+
+  lint:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run lint
+      - run: yarn run lint-docs
+      - run: yarn run lint-css
+
+  build:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run build-prod-min
+      - run: yarn run build-prod
+      - run: yarn run build-csp
+      - run: yarn run build-dev
+      - run: yarn run build-css
+      - run: yarn run build-style-spec
+      - run: yarn run build-flow-types
+      - run: yarn run test-build
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: dist
+      - uses: actions/upload-artifact@v2
+        with:
+          path: test/release
+
+  check-size:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+      - name: Check bundle size
+        run: |
+          node build/check-bundle-size.js "dist/mapbox-gl.js" "JS"
+          node build/check-bundle-size.js "dist/mapbox-gl.css" "CSS"
+
+  collect-stats:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - name: Collect performance stats
+        run: node bench/gl-stats.js
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Performance stats
+          path: data.json.gz
+
+  test-flow:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run test-flow
+
+  test-unit:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run test-unit
+
+  test-render:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run test-render
+      - uses: actions/upload-artifact@v2
+        with:
+          path: test/integration/render-tests/index.html
+
+  test-query:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run test-query
+      - uses: actions/upload-artifact@v2
+        with:
+          path: test/integration/query-tests
+      - uses: actions/upload-artifact@v2
+        with:
+          path: test/integration/query-tests/index.html
+
+  test-expressions:
+    <<: *defaults
+    steps:
+      <<: *setup
+      - run: yarn run test-expressions
+
+  # TODO: need a new data provider for this to run
+  # test-browser:
+  #   <<: *defaults
+  #   steps:
+  #     <<: *setup
+  #     - run: yarn run build-dev
+  #     - run: yarn run build-token
+  #     - name: Test Chrome
+  #       environment:
+  #         SELENIUM_BROWSER: chrome
+  #         TAP_COLORS: 1
+  #       run: yarn run test-browser
+  #     - name: Test Firefox
+  #       environment:
+  #         SELENIUM_BROWSER: firefox
+  #         TAP_COLORS: 1
+  #       runt: yarn run test-browser
