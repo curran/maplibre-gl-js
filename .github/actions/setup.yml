@@ -1,0 +1,17 @@
+name: 'Setup'
+description: 'Set up a workspace'
+inputs:
+  node-version:
+    description: 'Version of node.js to use'
+    default: '10'
+  architecture:
+    description: 'Node.js architecture to use'
+    default: 'x64'
+
+  - uses: actions/checkout@v2
+  - name: Use Node.js ${{ matrix.node-version }}
+    uses: actions/setup-node@v2-beta
+    with:
+      node-version: ${{ node-version }}
+      architecture: ${{ architecture }}
+  - run: yarn install --frozen-lockfile

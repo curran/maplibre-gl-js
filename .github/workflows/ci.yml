@@ -35,23 +35,11 @@ jobs:
 
       - run: yarn run lint
       - run: yarn run build-dev
-
-      # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
-      - if: ${{ runner.os == 'Linux' }}
-        run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn test-unit
-      - if: ${{ runner.os != 'Linux' }}
-        run: yarn test-unit
+      - run: yarn test-unit
 
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
       - run: yarn run lint
       - run: yarn run lint-docs
       - run: yarn run lint-css
@@ -59,13 +47,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: yarn run build-prod-min
       - run: yarn run build-prod
       - run: yarn run build-csp
@@ -86,13 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - uses: actions/download-artifact@v2
         with:
           name: dist
@@ -106,13 +82,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v2
         with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
+          name: dist
+          path: dist
       - name: Collect performance stats
         run: node bench/gl-stats.js
       - uses: actions/upload-artifact@v2
@@ -123,56 +97,25 @@ jobs:
   test-flow:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: yarn run test-flow
 
   test-unit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
-      - run: yarn run test-unit
-
-  test-render:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
-      - run: yarn run test-render
-      - uses: actions/upload-artifact@v2
-        with:
-          path: test/integration/render-tests/index.html
+      - uses: ./.github/actions/setup
+      # see: https://github.com/stackgl/headless-gl#how-can-headless-gl-be-used-on-a-headless-linux-machine
+      - run: xvfb-run -s "-ac -screen 0 1280x1024x24" yarn run test-unit
 
   test-query:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: yarn run test-query
       - uses: actions/upload-artifact@v2
         with:
           path: test/integration/query-tests
+          name: dist
       - uses: actions/upload-artifact@v2
         with:
           path: test/integration/query-tests/index.html
@@ -180,16 +123,18 @@ jobs:
   test-expressions:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2-beta
-        with:
-          node-version: 10
-          architecture: x64
-      - run: yarn install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: yarn run test-expressions
 
-  # TODO: need a new data provider for this to run
+  # TODO: need a new data provider for these to run
+  # test-render:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: ./.github/actions/setup
+  #     - run: yarn run test-render
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         path: test/integration/render-tests/index.html
   # test-browser:
   #   runs-on: ubuntu-latest
   #   steps:
