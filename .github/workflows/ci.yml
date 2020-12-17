@@ -12,16 +12,13 @@ on:
 defaults: &defaults
   runs-on: ubuntu-latest
 
-checkout: &checkout
-  uses: actions/checkout@v2
-node: &node
-  name: Use Node.js ${{ matrix.node-version }}
-  uses: actions/setup-node@v2-beta
-  with:
-    node-version: 10
-    architecture: x64
-yarn: &yarn
-  run: yarn install --frozen-lockfile
+  - uses: actions/checkout@v2
+  - name: Use Node.js ${{ matrix.node-version }}
+    uses: actions/setup-node@v2-beta
+    with:
+      node-version: 10
+      architecture: x64
+  - run: yarn install --frozen-lockfile
 
 jobs:
   lint_build_test:
@@ -57,21 +54,29 @@ jobs:
         run: yarn test-unit
 
   lint:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run lint
       - run: yarn run lint-docs
       - run: yarn run lint-css
 
   build:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run build-prod-min
       - run: yarn run build-prod
       - run: yarn run build-csp
@@ -89,12 +94,16 @@ jobs:
           path: test/release
 
   check-size:
-    <<: *defaults
+    runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - uses: actions/download-artifact@v2
         with:
           name: dist
@@ -105,12 +114,16 @@ jobs:
           node build/check-bundle-size.js "dist/mapbox-gl.css" "CSS"
 
   collect-stats:
-    <<: *defaults
+    runs-on: ubuntu-latest
     needs: [build]
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - name: Collect performance stats
         run: node bench/gl-stats.js
       - uses: actions/upload-artifact@v2
@@ -119,38 +132,54 @@ jobs:
           path: data.json.gz
 
   test-flow:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-flow
 
   test-unit:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-unit
 
   test-render:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-render
       - uses: actions/upload-artifact@v2
         with:
           path: test/integration/render-tests/index.html
 
   test-query:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-query
       - uses: actions/upload-artifact@v2
         with:
@@ -160,16 +189,20 @@ jobs:
           path: test/integration/query-tests/index.html
 
   test-expressions:
-    <<: *defaults
+    runs-on: ubuntu-latest
     steps:
-      - *checkout
-      - *node
-      - *yarn
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: 10
+          architecture: x64
+      - run: yarn install --frozen-lockfile
       - run: yarn run test-expressions
 
   # TODO: need a new data provider for this to run
   # test-browser:
-  #   <<: *defaults
+  #   runs-on: ubuntu-latest
   #   steps:
   #     - *checkout
   #     - *node
